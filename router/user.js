@@ -1,21 +1,33 @@
 const express = require('express')
-const {home ,login ,signup ,login_admin ,login_admin_post ,signup_admin ,signup_admin_post ,edit_post ,delete_post ,edit , delete_, signup_post, login_post,search_post
-}=require('../controller/user')
+const { home, login, signup, login_admin, signup_admin, edit, delete_, search
+} = require('../controller/user')
 const router = express.Router()
+const jwt = require('jsonwebtoken')
 
-router.get('/',home)
-router.get('/signup',signup)
-router.get('/login',login)
-router.post('/signup',signup_post)
-router.post('/login',login_post)
-router.get('/loginAdmin',login_admin)
-router.get('/signupAdmin',signup_admin)
-router.post('/signupAdmin',signup_admin_post)
-router.post('/loginAdmin',login_admin_post)
-router.get('/delete',delete_)
-router.post('/delete',delete_post)
-router.post('/edit',edit_post)
-router.get('/edit',edit)
-router.post('/loginAdmin/search',search_post)
+router.get('/', home)
+router.post('/signup', signup)
+router.post('/login', login)
+router.get('/loginAdmin', login_admin)
+router.get('/signupAdmin', signup_admin)
+router.post('/signupAdmin', signup_admin)
+router.post('/loginAdmin', login_admin)
+router.post('/delete', auth, delete_)
+router.post('/edit', auth, edit)
+router.post('/loginAdmin/search', auth, search)
 
+
+function auth(req, res, next) {
+    try {
+        const authHeader = req.headers.cookie
+        const token = authHeader.split('=')[1]
+        if (token == null) return res.sendStatus(401)
+        jwt.verify(token, 'siddik', (err, user) => {
+            if (err) return res.sendStatus(403)
+            res.user = user
+            next()
+        })
+    } catch (err) {
+        res.send({ message: 'unAuthorized' })
+    }
+}
 module.exports = router

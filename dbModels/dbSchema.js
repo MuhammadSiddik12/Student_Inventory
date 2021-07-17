@@ -4,8 +4,8 @@ const students_schema = mongoose.Schema({
     email: {
         type: String,
         lowercase: true,
-        },
-        name: {
+    },
+    name: {
         type: String,
         required: true
     }, password: {
